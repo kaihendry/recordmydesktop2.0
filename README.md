@@ -8,6 +8,7 @@ Options:
 	-v verbose
 	-d duration in seconds
 	-u upload host
+	-c specify code, e.g. ffvhuff
 
 Example:
 
