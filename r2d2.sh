@@ -5,7 +5,6 @@ cat $(readlink -f $(dirname $0))/README.md
 }
 
 verbose="-v warning"
-codec="utvideo"
 nonfree=1
 while getopts "o:d:vhu:c:n" o
 do
