@@ -26,7 +26,7 @@ log=${out%.*}.log
 
 temp=$(mktemp -u "/tmp/$0.XXXX.mkv")
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
-trap "rm -f $today $temp 2>/dev/null; exit" EXIT
+#trap "rm -f $today $temp 2>/dev/null; exit" EXIT
 
 res=$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')
 echo -e "\033[1;34m$0\033[m capturing $res to $out."
@@ -34,6 +34,9 @@ test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your sc
 
 ( set -x
 ffmpeg $verbose $duration -f x11grab -s $res -r 30 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+# For Apple IOS Safari, -crf 0 means lossless
+ffmpeg $verbose -i $temp -crf 0 -c:v libx264 -c:a libmp3lame ${out%.*}.mp4
+# For everthing else
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -b:v 2000k $out) 2>&1 | tee $log
 # Tweakables
 # -b:v 3000k	bit rate aiming to get a clear view of the desktop
@@ -41,10 +44,17 @@ ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -b:v 2000k $out) 2
 
 # Generate HTML source
 html=${out%.*}.html
-echo "<video width=640 height=360 controls autoplay src=$(basename $out)></video><pre>" > $html
 
-eval $(ffprobe -v 0 -of flat=s=_ -show_format $out) # trick to video info into shell
+cat <<END > $html
+<video controls width=640 height=360 controls autoplay>
+  <source src="$(basename ${out%.*}.mp4)" type="video/mp4">
+  <source src="$(basename $out)" type="video/webm">
+</video><pre>
+END
 
+eval $(ffprobe -v 0 -of flat=s=_ -show_format $out) # neat trick to get video variables into shell
+
+ffprobe -v warning -show_format ${out%.*}.mp4 >> $html
 ffprobe -v warning -show_format $out >> $html
 echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0/blob/master/r2d2.sh>r2d2.sh source</a></p>" >> $html
 
