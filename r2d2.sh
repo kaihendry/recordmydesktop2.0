@@ -35,7 +35,11 @@ test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your sc
 ( set -x
 ffmpeg $verbose $duration -f x11grab -s $res -r 30 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
 # For Apple IOS Safari
-ffmpeg $verbose -i $temp -c:v libx264 -vpre ipod640 -c:a libmp3lame ${out%.*}.mp4
+if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac ${out%.*}.mp4
+then
+	echo -e "\033[1;34m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :("
+	echo https://bugs.archlinux.org/task/27465
+fi
 # For everything else
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -b:v 2000k $out) 2>&1 | tee $log
 # Tweakables
