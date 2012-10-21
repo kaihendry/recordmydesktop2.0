@@ -17,15 +17,13 @@ Options:
 
 Examples:
 
-Record to $today/out.{webm,mp4}, however you need to enter [q] to finish the recording
+Records to $today/out.{webm,mp4} You need to enter [q] to finish the recording.
 
 	r2d2.sh
 
 Take a 5 second capture to 5seconds.{webm,mp4} and upload to r2d2.webconverger.org:/srv/www/r2d2.webconverger.org
 
 	r2d2.sh -d 5 -u r2d2.webconverger.org:/srv/www/r2d2.webconverger.org 5seconds
-
-Overwrites to `out.webm` by default.
 
 # TODO - Great HTML5 video experience
 
