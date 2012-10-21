@@ -41,8 +41,7 @@ test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
 if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
 then
-	echo -e "\033[1;34m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :("
-	echo https://bugs.archlinux.org/task/27465
+	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
 fi
 echo -e "\033[1;34m$0\033[m encoding webm for everything else"
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -b:v 2000k $out) 2>&1 | tee $log
@@ -65,7 +64,7 @@ test -f "$mp4" && ffprobe -v warning -show_format $mp4 >> $html
 ffprobe -v warning -show_format $out >> $html
 echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0/blob/master/r2d2.sh>r2d2.sh source</a></p>" >> $html
 
-echo -e  "\033[1;34m$0\033[m captured $(du -h $out) $(test -f "$mp4" && du -h $mp4), duration: $format_duration seconds"
+echo -e  "\033[1;34m$0\033[m captured $(du -h $out) $(test -f "$mp4" && du -h $mp4) duration: $format_duration seconds"
 
 if test "$dest"
 then

@@ -31,6 +31,8 @@ Overwrites to `out.webm` by default.
 
 * Tweak WebM content, good colours, try get duration fine
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
+* Report issues to ffmpeg like:
+	-t is not an input option, keeping it for the next output; consider fixing your command line.
 
 # Furthermore
 
