@@ -15,9 +15,9 @@ Example:
 # TODO - Great HTML5 video experience
 
 * Improve WebM content, good colours, duration is intact
-* Determine how to programatically get the duration of a webm file
 * Ensure it works on IOS6 Safari, i.e. create [H264](http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC) version
-* Improve HTML output <http://ffmpeg.org/ffprobe.html#Writers>
+* Improve HTML output of `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
+	shell scripting, -of flat=s=_ makes possible to eval directly the variables 
 
 # Further links
 
