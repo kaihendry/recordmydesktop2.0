@@ -5,7 +5,6 @@ Usage: r2d2.sh [options] [output filename]
 Options:
 
 	-h this help
-	-v verbose
 	-d duration in seconds
 	-u upload host
 

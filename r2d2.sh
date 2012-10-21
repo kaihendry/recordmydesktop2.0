@@ -5,13 +5,11 @@ cat $(readlink -f $(dirname $0))/README.md
 }
 
 codec="utvideo"
-verbose="-loglevel quiet"
 while getopts "o:d:vhu:c:" o
 do
 	case "$o" in
 	(u) dest="$OPTARG";;
 	(d) duration="-t $OPTARG";;
-	(v) verbose="";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
 	(h) usage; exit;;
 	(*) break;;
@@ -36,7 +34,7 @@ ffmpeg -i $temp -acodec libvorbis $temp2 2>&1 | tee -a $log
 ffmpeg -i $temp2 -acodec copy -vcodec libvpx $out 2>&1 | tee -a $log
 
 # Generate HTML source
-echo "<video controls src=$out></video>" > $out.html
+echo "<video controls src=$(basename $out)></video>" > $out.html
 
 if test "$dest"
 then
