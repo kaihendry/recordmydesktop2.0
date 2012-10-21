@@ -29,9 +29,10 @@ trap "rm -f $today $temp $temp2 2>/dev/null; exit" EXIT
 res=$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')
 echo $0: Capturing $res to $out.
 
-ffmpeg $duration -f x11grab -s $res -r 30 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp 2>&1 | tee $log
-ffmpeg -i $temp -acodec libvorbis $temp2 2>&1 | tee -a $log
-ffmpeg -i $temp2 -acodec copy -vcodec libvpx $out 2>&1 | tee -a $log
+( set -x
+ffmpeg $duration -f x11grab -s $res -r 30 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+ffmpeg -i $temp -acodec libvorbis $temp2
+ffmpeg -i $temp2 -acodec copy -vcodec libvpx $out) 2>&1 | tee $log
 
 # Generate HTML source
 echo "<video controls src=$(basename $out)></video>" > $out.html
