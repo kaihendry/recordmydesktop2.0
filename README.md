@@ -28,6 +28,7 @@ Take a 5 second capture to 5seconds.{webm,mp4} and upload to r2d2.webconverger.o
 # TODO - Great HTML5 video experience
 
 * Tweak WebM content, good colours, try get duration fine
+* Figure out how to get seeking working across browsers
 * Figure out why webm is 3x the size of mp4
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
 * Report issues to ffmpeg like:
