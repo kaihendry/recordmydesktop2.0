@@ -1,28 +1,40 @@
 # recordmydesktop 2.0 - r2d2.sh
 
+A better tool than
+[recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
+screencasts from Archlinux (typically) to HTML5 video using .webm and .mp4 for
+Apple
+
 Usage: r2d2.sh [options] [output filename].webm
 
 Options:
 
 	-h this help
 	-v verbose
+	-n do not create non-free mp4 for Apple devices
 	-d duration in seconds
 	-u upload host
 
-Example:
+Examples:
 
-	r2d2.sh -d 5 -u r2d2.webconverger.org:/srv/www/r2d2.webconverger.org
+Record to $today/out.{webm,mp4}, however you need to enter [q] to finish the recording
+
+	r2d2.sh
+
+Take a 5 second capture to 5seconds.{webm,mp4} and upload to r2d2.webconverger.org:/srv/www/r2d2.webconverger.org
+
+	r2d2.sh -d 5 -u r2d2.webconverger.org:/srv/www/r2d2.webconverger.org 5seconds
 
 Overwrites to `out.webm` by default.
 
 # TODO - Great HTML5 video experience
 
 * Tweak WebM content, good colours, try get duration fine
-* Ensure it works on IOS6 Safari, i.e. create [H264](http://en.wikipedia.org/wiki/H.264/MPEG-4_AVC) version
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
 
 # Furthermore
 
+* For Apple compatible MP4s, you need to ensure ffmpeg is compiled with [--enable-nonfree --enable-libfaac](https://bugs.archlinux.org/task/27465)
 * Thanks to ubitux, JEEB & [klaxa](https://gist.github.com/7dcccbd86fdcce3c4ced) on Freenode's #ffmpeg
 * <http://webconverger.org/screencasting>
 * Need to capture regions in your screencast? See: <https://github.com/lolilolicon/FFcast2>
