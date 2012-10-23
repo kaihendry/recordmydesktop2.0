@@ -26,7 +26,7 @@ if test "${out##*.}" != "webm"; then out=$out.webm; fi
 log=${out%.*}.log
 test "$nonfree" -gt 0 && mp4=${out%.*}.mp4
 
-temp=$(mktemp -u "/tmp/$0.XXXX.mkv")
+temp=$(mktemp -u "${0}XXXX.mkv")
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
 trap "rm -f $today $temp 2>/dev/null; exit" EXIT
 
@@ -35,7 +35,7 @@ echo -e "\033[1;34m$0\033[m capturing $res to $out."
 test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
 ( set -x
-ffmpeg $verbose $duration -f x11grab -s $res -r 30 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
 if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
