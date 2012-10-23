@@ -43,10 +43,7 @@ then
 	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
 fi
 echo -e "\033[1;34m$0\033[m encoding webm for everything else"
-ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -b:v 2000k $out) 2>&1 | tee $log
-# webm tweakables
-# -b:v 2000k	bit rate aiming to get a clear view of the desktop
-# -q:a 7	audio quality
+ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee $log
 
 # Generate HTML source
 html=${out%.*}.html
