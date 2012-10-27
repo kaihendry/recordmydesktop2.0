@@ -1,20 +1,22 @@
 #!/bin/bash -e
 
+test -f ~/.r2d2 && source ~/.r2d2
+
 usage() {
 cat $(readlink -f $(dirname $0))/README.md
 }
 
 verbose="-v warning"
 nonfree=1
-while getopts "o:d:vhu:c:n" o
+while getopts "o:d:vhu:c:nr" o
 do
 	case "$o" in
-	(u) dest="$OPTARG";;
 	(n) nonfree=0;;
 	(d) duration="-t $OPTARG";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
 	(h) usage; exit;;
 	(v) verbose="";; # funnily ffmpeg is verbose by default
+	(r) raw=true;;
 	(*) break;;
 	esac
 done
@@ -22,20 +24,28 @@ shift $((OPTIND - 1))
 today=$(date --iso-8601=date)
 mkdir $today &>/dev/null || true
 out=$today/${1:-out.webm}
-if test "${out##*.}" != "webm"; then out=$out.webm; fi
+if test "${out##*.}" != "webm"; then out=${out%.*}.webm; fi
 log=${out%.*}.log
 test "$nonfree" -gt 0 && mp4=${out%.*}.mp4
 
-temp=$(mktemp -u "${0}XXXX.mkv")
+temp=$(mktemp -u "rawXXXX.mkv")
+if test "${1##*.}" == "mkv"
+then
+	temp=$1
+fi
+
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
-trap "rm -f $today $temp 2>/dev/null; exit" EXIT
 
 res=$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')
 echo -e "\033[1;34m$0\033[m capturing $res to $out."
 test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
 ( set -x
-ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+if ! test -e $temp
+then
+	ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+fi
+test "$raw" && echo $temp && exit
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
 if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
@@ -44,6 +54,11 @@ then
 fi
 echo -e "\033[1;34m$0\033[m encoding webm for everything else"
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee $log
+
+if test "$raw" || ! test -f $out
+then
+	exit
+fi
 
 # Generate HTML source
 html=${out%.*}.html
@@ -64,6 +79,6 @@ echo -e  "\033[1;34m$0\033[m captured $(du -h $out) $(test -f "$mp4" && du -h $m
 
 if test "$dest"
 then
-	rsync -r --progress --remove-source-files $today $dest
+	echo rsync -r --progress --remove-source-files $today $dest
 	echo -e "\n\n\033[1;34m$0\033[m SHARE URL: http://$(basename $dest)/$html\n"
 fi
