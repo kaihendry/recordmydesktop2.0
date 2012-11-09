@@ -11,6 +11,7 @@ Options:
 
 	-h this help
 	-v verbose
+	-m do not touch mixer
 	-n do not create non-free mp4 for Apple devices
 	-d duration in seconds
 	-r just raw

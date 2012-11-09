@@ -8,10 +8,12 @@ cat $(readlink -f $(dirname $0))/README.md
 
 verbose="-v warning"
 nonfree=1
-while getopts "o:d:vhu:c:nr" o
+mixer="90%"
+while getopts "o:d:vhu:c:nrm" o
 do
 	case "$o" in
-	(n) nonfree=0;;
+	(n) nonfree="";;
+	(m) mixer="";;
 	(d) duration="-t $OPTARG";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
 	(h) usage; exit;;
@@ -36,16 +38,24 @@ fi
 
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
 
+# Set a sane recording volume
+if test "$mixer"
+then
+	amixer set "Capture" "$mixer"
+	test "$verbose" || echo -e "\033[1;34m$0\033[m Set recording volume to $mixer"
+fi
+
 res=$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')
 echo -e "\033[1;34m$0\033[m capturing $res to $out."
 test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
-( set -x
-if ! test -e $temp
-then
-	ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
-fi
+(
+
+set -x
+ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+
 test "$raw" && echo $temp && exit
+
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
 if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
@@ -55,14 +65,15 @@ fi
 echo -e "\033[1;34m$0\033[m encoding webm for everything else"
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee $log
 
-if test "$raw" || ! test -f $out
+# Clear up temp
+if test -f $out && test -f $temp
 then
-	exit
+	rm -v $temp
 fi
 
 # Generate HTML source
 html=${out%.*}.html
-echo "<video controls width=640 height=360 controls autoplay>" > $html
+echo "<video controls width=640 height=360 controls>" > $html
 test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
 cat <<END >> $html
 <source src="$(basename $out)" type="video/webm">
