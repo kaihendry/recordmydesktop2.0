@@ -23,17 +23,30 @@ do
 	esac
 done
 shift $((OPTIND - 1))
-today=$(date --iso-8601=date)
-mkdir $today &>/dev/null || true
-out=$today/${1:-out.webm}
-if test "${out##*.}" != "webm"; then out=${out%.*}.webm; fi
-log=${out%.*}.log
-test "$nonfree" -gt 0 && mp4=${out%.*}.mp4
+today="$(date --iso-8601=date)"
+mkdir "$today" &>/dev/null || true
 
-temp=$(mktemp -u "rawXXXX.mkv")
+out="$today/${1:-out.webm}"
+
+test -f "$out" &&
+for n in $(seq 1 100)
+do
+	new=${out%.*}-$n.webm
+	if ! test -f "$new"
+	then
+		 out=$new
+		 break
+	fi
+done
+
+if test "${out##*.}" != "webm"; then out="${out%.*}.webm"; fi
+log="${out%.*}.log"
+test "$nonfree" -gt 0 && mp4="${out%.*}.mp4"
+
+temp="$(mktemp -u "rawXXXX.mkv")"
 if test "${1##*.}" == "mkv"
 then
-	temp=$1
+	temp="$1"
 fi
 
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
@@ -45,16 +58,17 @@ then
 	test "$verbose" || echo -e "\033[1;34m$0\033[m Set recording volume to $mixer"
 fi
 
-res=$(xdpyinfo | grep 'dimensions:'|awk '{print $2}')
+res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 echo -e "\033[1;34m$0\033[m capturing $res to $out."
 test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
 (
+test "$verbose" || set -x
 
-set -x
-ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+# Only create RAW file if one does not exist
+test -f "$temp" || ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
 
-test "$raw" && echo $temp && exit
+test "$raw" && exit
 
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
@@ -63,16 +77,19 @@ then
 	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
 fi
 echo -e "\033[1;34m$0\033[m encoding webm for everything else"
-ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee $log
+ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee -a $log
 
-# Clear up temp
+# Clear up temp.mkv, only if there is at least an output file
 if test -f $out && test -f $temp
 then
 	rm -v $temp
+else
+	echo -e "\033[1;34m$0\033[m created RAW file $temp"
+	exit
 fi
 
 # Generate HTML source
-html=${out%.*}.html
+html="${out%.*}.html"
 echo "<video controls width=640 height=360 controls>" > $html
 test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
 cat <<END >> $html
@@ -91,5 +108,5 @@ echo -e  "\033[1;34m$0\033[m captured $(du -h $out) $(test -f "$mp4" && du -h $m
 if test "$dest"
 then
 	echo rsync -r --progress --remove-source-files $today $dest
-	echo -e "\n\n\033[1;34m$0\033[m SHARE URL: http://$(basename $dest)/$html\n"
+	echo -e "\n\033[1;34m$0\033[m SHARE URL: http://$(basename $dest)/$html\n"
 fi
