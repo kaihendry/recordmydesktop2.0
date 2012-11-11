@@ -2,8 +2,8 @@
 
 A better tool than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
-screencasts from Archlinux (typically) to HTML5 video using .webm and .mp4 for
-Apple
+screencasts from Archlinux (typically) to HTML5 video using .webm (For Firefox)
+and .mp4 (H264) for Apple.
 
 Usage: r2d2.sh [options] [output filename].webm
 
@@ -25,6 +25,12 @@ Records to $today/out.{webm,mp4} You need to enter [q] to finish the recording.
 Take a 5 second capture to 5seconds.webm
 
 	r2d2.sh -d 5 -n 5seconds
+
+# Config
+
+My `~/.r2d2` configiration file looks like:
+
+	dest=vids.webconverger.org:/srv/www/vids.webconverger.org
 
 # Incorporating audio recording from another source like your iPhone & headphones mic
 
@@ -51,12 +57,9 @@ And now finish off the process with:
 
 * Tweak WebM content, good colours, try get duration fine
 * Figure out how to get seeking working across browsers
-* Figure out why webm is 3x the size of mp4
+* Figure out why webm is 2x the size of mp4
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
-* itsoffset and map
 * looking into `mkvmerge` from the mkvtoolnix-cli package for editing the raw
-* Report issues to ffmpeg like:
-	-t is not an input option, keeping it for the next output; consider fixing your command line.
 
 # Furthermore
 
