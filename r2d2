@@ -43,10 +43,11 @@ if test "${out##*.}" != "webm"; then out="${out%.*}.webm"; fi
 log="${out%.*}.log"
 test "$nonfree" -gt 0 && mp4="${out%.*}.mp4"
 
-temp="$(mktemp -u "rawXXXX.mkv")"
-if test "${1##*.}" == "mkv"
+if test -f "$1"
 then
 	temp="$1"
+else
+	temp="$(basename $out .webm).mkv"
 fi
 
 test "$verbose" || echo -e "\033[1;34m$0\033[m $temp"
@@ -59,16 +60,20 @@ then
 fi
 
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
-echo -e "\033[1;34m$0\033[m capturing $res progress to $log"
-test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
+echo -e "\033[1;34m$0\033[m saving progress to $log"
+test "$duration" || ! test -f "$1" && echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
 (
 test "$verbose" || set -x
 
 # Only create RAW file if one does not exist
-test -f "$temp" ||
-ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $temp
+if ! test -f "$temp"
+then
+	echo -e "\033[1;34m$0\033[m Capturing $res"
+	ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $temp
+fi
 
+# quit if we just wanted the raw file
 test "$raw" && exit
 
 test "$mp4" &&
@@ -81,10 +86,8 @@ echo -e "\033[1;34m$0\033[m encoding webm for everything else"
 ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee -a $log
 
 # Clear up temp.mkv, only if there is at least an output file
-if test -f $out && test -f $temp
+if ! test -f $out && test -f $temp
 then
-	rm -v $temp
-else
 	echo -e "\033[1;34m$0\033[m created RAW file $temp"
 	exit
 fi
