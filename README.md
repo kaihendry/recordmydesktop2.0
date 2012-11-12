@@ -36,6 +36,8 @@ My `~/.r2d2` configiration file looks like:
 
 <img width=320 height=568 src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
 
+Video: <http://youtu.be/_bp5N76puEQ>
+
 This is a good method requiring some careful synchronization to ensure clear
 sound without the noise from your PC's microphone.
 
