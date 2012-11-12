@@ -59,20 +59,21 @@ then
 fi
 
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
-echo -e "\033[1;34m$0\033[m capturing $res to $out."
+echo -e "\033[1;34m$0\033[m capturing $res progress to $log"
 test "$duration" || echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
 (
 test "$verbose" || set -x
 
 # Only create RAW file if one does not exist
-test -f "$temp" || ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec flac -vcodec ffvhuff $temp
+test -f "$temp" ||
+ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $temp
 
 test "$raw" && exit
 
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
-if ! ffmpeg $verbose -y -i $temp -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
+if ! ffmpeg $verbose -y -i $temp -movflags +faststart -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
 then
 	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
 fi

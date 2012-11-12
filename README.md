@@ -55,8 +55,6 @@ And now finish off the process with:
 
 # TODO - Great HTML5 video experience
 
-* Tweak WebM content, good colours, try get duration fine
-* Figure out how to get seeking working across browsers
 * Figure out why webm is 2x the size of mp4
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
 * looking into `mkvmerge` from the mkvtoolnix-cli package for editing the raw
