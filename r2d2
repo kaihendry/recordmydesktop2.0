@@ -12,7 +12,7 @@ mixer="90%"
 while getopts "o:d:vhu:c:nrm" o
 do
 	case "$o" in
-	(n) nonfree="";;
+	(n) nonfree=0;;
 	(m) mixer="";;
 	(d) duration="-t $OPTARG";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
@@ -26,20 +26,15 @@ shift $((OPTIND - 1))
 today="$(date --iso-8601=date)"
 mkdir "$today" &>/dev/null || true
 
-out="$today/${1:-out.webm}"
-
-test -f "$out" &&
-for n in $(seq 1 100)
-do
-	new=${out%.*}-$n.webm
-	if ! test -f "$new"
-	then
-		 out=$new
-		 break
-	fi
-done
-
+out="$today/$(basename "${1:-out.webm}" | tr ' ' _)"
 if test "${out##*.}" != "webm"; then out="${out%.*}.webm"; fi
+
+if test -f "$out"
+then
+	echo -e "\033[1;34m$0\033[m $out already exists"
+	exit
+fi
+
 log="${out%.*}.log"
 test "$nonfree" -gt 0 && mp4="${out%.*}.mp4"
 
@@ -59,7 +54,6 @@ then
 	test "$verbose" || echo -e "\033[1;34m$0\033[m Set recording volume to $mixer"
 fi
 
-res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 echo -e "\033[1;34m$0\033[m saving progress to $log"
 test "$duration" || ! test -f "$1" && echo -e "\033[1;34m$0\033[m Type q then enter to end your screencast"
 
@@ -69,6 +63,7 @@ test "$verbose" || set -x
 # Only create RAW file if one does not exist
 if ! test -f "$temp"
 then
+	res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 	echo -e "\033[1;34m$0\033[m Capturing $res"
 	ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $temp
 fi
@@ -77,16 +72,16 @@ fi
 test "$raw" && exit
 
 test "$mp4" &&
-echo -e "\033[1;34m$0\033[m encoding for Apple IOS Safari" &&
-if ! ffmpeg $verbose -y -i $temp -movflags +faststart -c:v libx264 -vpre ipod640 -acodec libfaac $mp4
+echo -e "\033[1;34m$0\033[m encoding $mp4 for Apple IOS Safari" &&
+if ! ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 $t -vpre ipod640 -acodec libfaac $mp4
 then
 	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
 fi
-echo -e "\033[1;34m$0\033[m encoding webm for everything else"
-ffmpeg $verbose -y -i $temp -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 2000k $out) 2>&1 | tee -a $log
+echo -e "\033[1;34m$0\033[m encoding $out for everything else"
+time ffmpeg $verbose -y -i "$temp" -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 1000k $t "$out") 2>&1 | tee -a "$log"
 
 # Clear up temp.mkv, only if there is at least an output file
-if ! test -f $out && test -f $temp
+if ! test -f "$out" && test -f "$temp"
 then
 	echo -e "\033[1;34m$0\033[m created RAW file $temp"
 	exit
@@ -107,7 +102,8 @@ test -f "$mp4" && ffprobe -v warning -show_format $mp4 >> $html
 ffprobe -v warning -show_format $out >> $html
 echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0/blob/master/r2d2.sh>r2d2.sh source</a></p>" >> $html
 
-echo -e  "\033[1;34m$0\033[m captured $(du -h $out) $(test -f "$mp4" && du -h $mp4) duration: $format_duration seconds"
+echo -e "\033[1;34m$0\033[m wrote $(du -h $out) $(test -f "$mp4" && du -h $mp4) $(test "$format_duration" && echo duration: $format_duration seconds)"
+echo -e "\033[1;34m$0\033[m compressed $(du -h $temp) to $(du -h $out), $(du -m $temp $out | awk 't{printf("%.0f\n",100*$1/t)}{t=$1}')% of size"
 
 if test "$dest"
 then
