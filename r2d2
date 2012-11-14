@@ -7,12 +7,12 @@ cat $(readlink -f $(dirname $0))/README.md
 }
 
 verbose="-v warning"
-nonfree=1
 mixer="90%"
-while getopts "o:d:vhu:c:nrm" o
+while getopts "o:d:vhu:c:nrmf" o
 do
 	case "$o" in
-	(n) nonfree=0;;
+	(f) flip=true;;
+	(n) nomp4=true;;
 	(m) mixer="";;
 	(d) duration="-t $OPTARG";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
@@ -36,7 +36,7 @@ then
 fi
 
 log="${out%.*}.log"
-test "$nonfree" -gt 0 && mp4="${out%.*}.mp4"
+test "$nomp4" || mp4="${out%.*}.mp4"
 
 if test -f "$1"
 then
@@ -73,10 +73,21 @@ test "$raw" && exit
 
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding $mp4 for non-free Apple devices" &&
-time ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
+if test "$flip"
+then
+	time ffmpeg $verbose -y -i "$temp" -vf "transpose=0, transpose=3" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
+else
+	time ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
+fi
 
 echo -e "\033[1;34m$0\033[m encoding $out for everything else"
-time ffmpeg $verbose -y -i "$temp" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out") 2>&1 | tee -a "$log"
+if test "$flip"
+then
+	time ffmpeg $verbose -y -i "$temp" -vf "transpose=0, transpose=3" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
+else
+	time ffmpeg $verbose -y -i "$temp" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
+fi
+) 2>&1 | tee -a "$log"
 
 # Clear up temp.mkv, only if there is at least an output file
 if ! test -f "$out" && test -f "$temp"
@@ -90,26 +101,26 @@ html="${out%.*}.html"
 echo "<video controls width=640 height=360 controls>" > $html
 test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
 cat <<END >> $html
-<source src="$(basename $out)" type="video/webm">
+<source src="$(basename "$out")" type="video/webm">
 </video><pre>
 END
 
-eval $(ffprobe -v 0 -of flat=s=_ -show_format $out) # neat trick to get video variables into shell
+eval $(ffprobe -v 0 -of flat=s=_ -show_format "$out") # neat trick to get video variables into shell
 
-test -f "$mp4" && ffprobe -v warning -show_format $mp4 >> $html
+test -f "$mp4" && ffprobe -v warning -show_format "$mp4" >> $html
 ffprobe -v warning -show_format $out >> $html
 
 echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0/blob/master/r2d2.sh>r2d2.sh source</a></p>" >> $html
 
 if test -f "$mp4"
 then
-	du=$(du -h $out $mp4 | tr '\n\t' ' ')
+	du=$(du -h "$out" "$mp4" | tr '\n\t' ' ')
 else
-	du=$(du -h $out | tr '\t' ' ')
+	du=$(du -h "$out" | tr '\t' ' ')
 fi
 
 echo -e "\033[1;34m$0\033[m created $du $(test "$format_duration" && echo duration: $format_duration seconds)"
-echo -e "\033[1;34m$0\033[m compressed $(du -h $temp $out | tr '\n\t' ' '), $(stat -c %s $temp $out | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
+echo -e "\033[1;34m$0\033[m compressed $(du -h "$temp" "$out" | tr '\n\t' ' '), $(stat -c %s "$temp" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
 if test "$dest"
 then
