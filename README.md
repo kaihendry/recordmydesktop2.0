@@ -1,5 +1,7 @@
 # recordmydesktop 2.0 - r2d2
 
+**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0
+
 A better tool than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
 screencasts from Archlinux (typically) to HTML5 video using .webm (For Firefox)
@@ -12,7 +14,7 @@ Options:
 	-h this help
 	-v verbose
 	-m do not touch mixer
-	-n do not create non-free mp4 for Apple devices
+	-n do not create mp4 for Apple devices
 	-d duration in seconds
 	-r just raw
 
@@ -55,15 +57,22 @@ And now finish off the process with:
 
 	./r2d2 output.mkv
 
+# Convert old videos to HTML5 video formats
+
+	./r2d2 GOPR0940.MP4
+
+or on a server
+
+	./r2d2 -m b.mov
+
 # TODO - Great HTML5 video experience
 
-* Figure out why webm is 2x the size of mp4
 * Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
 * looking into `mkvmerge` from the mkvtoolnix-cli package for editing the raw
 
 # Furthermore
 
-* For Apple compatible MP4s, you need to ensure ffmpeg is compiled with [--enable-nonfree --enable-libfaac](https://bugs.archlinux.org/task/27465)
+* Thanks to Burek, for his sane [static builds of ffmpeg](http://ffmpeg.gusari.org/static/)
 * Thanks to ubitux, JEEB & [klaxa](https://gist.github.com/7dcccbd86fdcce3c4ced) on Freenode's #ffmpeg
 * <http://webconverger.org/screencasting>
 * Need to capture regions in your screencast? See: <https://github.com/lolilolicon/FFcast2>

@@ -73,12 +73,10 @@ test "$raw" && exit
 
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding $mp4 for Apple IOS Safari" &&
-if ! time ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 $t -vpre ipod640 -acodec libfaac $mp4
-then
-	echo -e "\033[1;31m$0\033[m you need to recompile ffmpeg to enable non-free libfaac :( https://bugs.archlinux.org/task/27465"
-fi
+time ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 -threads auto -vpre ipod640 -acodec aac -strict experimental $mp4
+
 echo -e "\033[1;34m$0\033[m encoding $out for everything else"
-time ffmpeg $verbose -y -i "$temp" -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 1000k $t "$out") 2>&1 | tee -a "$log"
+time ffmpeg $verbose -y -i "$temp" -c:a libvorbis -q:a 7 -c:v libvpx -crf 24 -b:v 1000k -threads auto "$out") 2>&1 | tee -a "$log"
 
 # Clear up temp.mkv, only if there is at least an output file
 if ! test -f "$out" && test -f "$temp"
@@ -107,11 +105,11 @@ if test -f "$mp4"
 then
 	du=$(du -h $out $mp4 | tr '\n\t' ' ')
 else
-	du=$(du -h $out | tr '\t' ':')
+	du=$(du -h $out | tr '\t' ' ')
 fi
 
 echo -e "\033[1;34m$0\033[m created $du $(test "$format_duration" && echo duration: $format_duration seconds)"
-echo -e "\033[1;34m$0\033[m compressed $(du -h $temp) to $(du -h $out), $(stat -c %s $temp $out | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
+echo -e "\033[1;34m$0\033[m compressed $(du -h $temp $out | tr '\n\t' ' '), $(stat -c %s $temp $out | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
 if test "$dest"
 then
