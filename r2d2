@@ -34,7 +34,7 @@ fi
 test "$today" || today="$(date --iso-8601=date)"
 echo TODAY $today
 out="$today/$(basename "${1:-out.webm}" | tr ' ' _)"
-test "input" || input="$(basename $out .webm).mkv"
+test "$input" || input="$(basename $out .webm).mkv"
 mkdir "$today" &>/dev/null || true
 
 if test "${out##*.}" != "webm"; then out="${out%.*}.webm"; fi
@@ -47,9 +47,6 @@ fi
 
 log="${out%.*}.log"
 test "$nomp4" || mp4="${out%.*}.mp4"
-
-
-
 test "$verbose" || echo -e "\033[1;34m$0\033[m $input"
 
 # Set a sane recording volume
