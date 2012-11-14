@@ -72,7 +72,7 @@ fi
 test "$raw" && exit
 
 test "$mp4" &&
-echo -e "\033[1;34m$0\033[m encoding $mp4 for Apple IOS Safari" &&
+echo -e "\033[1;34m$0\033[m encoding $mp4 for non-free Apple devices" &&
 time ffmpeg $verbose -y -i "$temp" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
 
 echo -e "\033[1;34m$0\033[m encoding $out for everything else"

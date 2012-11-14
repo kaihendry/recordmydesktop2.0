@@ -1,6 +1,6 @@
 # recordmydesktop 2.0 - r2d2
 
-**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0
+**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0 - recommended [static builds of ffmpeg](http://ffmpeg.gusari.org/static/)
 
 A better tool than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
