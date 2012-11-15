@@ -1,11 +1,15 @@
 # recordmydesktop 2.0 - r2d2
 
-**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0 - recommended [static builds of ffmpeg](http://ffmpeg.gusari.org/static/)
+**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0 -- [static builds of ffmpeg](http://ffmpeg.gusari.org/static/) are good for processing, however they do not support x11grab currently.
 
 A better tool than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
 screencasts from Archlinux (typically) to HTML5 video using .webm (For Firefox)
 and .mp4 (H264) for Apple.
+
+If you run `r2d2` upon an already existing mov or mp4 file, it will create /
+process the HTML, MP4 & WEBM for HTML viewing, so you can think of this tool
+like `ffmpeg2theora`.
 
 Usage: r2d2 [options] [output filename].webm
 

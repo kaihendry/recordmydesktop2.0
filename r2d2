@@ -2,6 +2,10 @@
 
 test -f ~/.r2d2 && source ~/.r2d2
 
+# ffmpeg static builds http://ffmpeg.gusari.org/static/
+# static builds do not have x11grab enabled, so you can only generate HTML5 video not capture
+test -f ffmpeg && export PATH=.:$PATH # Use local version of ffmpeg
+
 usage() {
 cat $(readlink -f $(dirname $0))/README.md
 }
