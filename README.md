@@ -40,7 +40,7 @@ My `~/.r2d2` configiration file looks like:
 
 # Incorporating audio recording from another source like your iPhone & headphones mic
 
-<img width=320 height=568 src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
+<img src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
 
 Video: <http://youtu.be/_bp5N76puEQ>
 
@@ -63,11 +63,17 @@ And now finish off the process with:
 
 # Convert old videos to HTML5 video formats
 
+Same principle as `ffmpeg2theora`.
+
 	./r2d2 GOPR0940.MP4
 
 or on a server
 
 	./r2d2 -m b.mov
+
+# How to record yourself if you have a Webcam in your laptop
+
+Using [guvcview](http://r2d2.webconverger.org/2012-11-15/guvcview.html).
 
 # TODO - Great HTML5 video experience
 
