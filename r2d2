@@ -119,7 +119,7 @@ eval $(ffprobe -v 0 -of flat=s=_ -show_format "$out")
 test -f "$mp4" && ffprobe -v warning -show_format "$mp4" >> $html
 ffprobe -v warning -show_format $out >> $html
 
-echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0/blob/master/r2d2.sh>r2d2.sh source</a></p>" >> $html
+echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0>r2d2.sh source</a></p>" >> $html
 
 if test -f "$mp4"
 then
