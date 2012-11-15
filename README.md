@@ -40,7 +40,7 @@ My `~/.r2d2` configiration file looks like:
 
 # Incorporating audio recording from another source like your iPhone & headphones mic
 
-<img src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
+<img width="128" height="227" src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
 
 Video: <http://youtu.be/_bp5N76puEQ>
 
