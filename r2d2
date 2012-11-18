@@ -96,7 +96,6 @@ then
 	exit
 fi
 
-echo $(dirname $0)/html-template
 . $(dirname $0)/html-template
 
 if test -f "$mp4"
