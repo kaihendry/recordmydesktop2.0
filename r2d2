@@ -12,10 +12,9 @@ cat $(readlink -f $(dirname $0))/README.md
 
 verbose="-v warning"
 mixer="90%"
-while getopts "o:d:vhu:c:nrmf" o
+while getopts "o:d:vhu:c:nrm" o
 do
 	case "$o" in
-	(f) flip=true;;
 	(n) nomp4=true;;
 	(m) mixer="";;
 	(d) duration="-t $OPTARG";;
@@ -80,22 +79,14 @@ test "$raw" && exit
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding $mp4 for non-free Apple devices" &&
 set -x
-if test "$flip"
-then
-	time ffmpeg $verbose -y -i "$input" -vf "transpose=0, transpose=3" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
-else
-	time ffmpeg $verbose -y -i "$input" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
-fi
+time ffmpeg $verbose -y -i "$input" -movflags +faststart -c:v libx264 -threads 0 -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
 
 set +x
 echo -e "\033[1;34m$0\033[m encoding $out for everything else"
 set -x
-if test "$flip"
-then
-	time ffmpeg $verbose -y -i "$input" -vf "transpose=0, transpose=3" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
-else
-	time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
-fi
+
+time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads 0 "$out"
+
 set +x
 ) 2>&1 | tee -a "$log"
 
@@ -105,21 +96,8 @@ then
 	exit
 fi
 
-# Generate HTML source
-html="${out%.*}.html"
-echo "<video controls width=640 height=360 controls>" > $html
-test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
-cat <<END >> $html
-<source src="$(basename "$out")" type="video/webm">
-</video><pre>
-END
-
-eval $(ffprobe -v 0 -of flat=s=_ -show_format "$out")
-
-test -f "$mp4" && ffprobe -v warning -show_format "$mp4" >> $html
-ffprobe -v warning -show_format $out >> $html
-
-echo "</pre><p><a href=$(basename $log)>ffmpeg logfile</a></p><p><a href=https://github.com/kaihendry/recordmydesktop2.0>r2d2.sh source</a></p>" >> $html
+echo $(dirname $0)/html-template
+. $(dirname $0)/html-template
 
 if test -f "$mp4"
 then

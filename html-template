@@ -1,0 +1,39 @@
+#!/bin/bash
+# $out - webm
+# optional $mp4
+# Generate HTML source
+
+html="${out%.*}.html"
+#eval $(ffprobe -v 0 -of flat=s=_ -show_format "$out")
+
+cat <<END > $html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>${out%.*}</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<video controls width=640 height=360>
+<source src=$(basename $out) type=video/webm>
+END
+
+test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
+
+cat <<END >> $html
+</video>
+<pre>
+END
+
+ffprobe -v warning -show_format $out >> $html
+test -f "$mp4" && ffprobe -v warning -show_format "$mp4" >> $html
+
+cat <<END >> $html
+</pre>
+
+<p><a href=$(basename $log)>ffmpeg logfile</a></p>
+<p><a href=https://github.com/kaihendry/recordmydesktop2.0>r2d2.sh source</a></p>
+</body>
+</html>
+END
