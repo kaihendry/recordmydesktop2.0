@@ -69,7 +69,7 @@ then
 	res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 	echo -e "\033[1;34m$0\033[m Capturing $res"
 	set -x
-	ffmpeg $verbose $duration -f x11grab -s $res -r 24 -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $input
+	ffmpeg $verbose $duration -threads auto -f x11grab -s $res -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $input
 	set +x
 fi
 
@@ -79,13 +79,13 @@ test "$raw" && exit
 test "$mp4" &&
 echo -e "\033[1;34m$0\033[m encoding $mp4 for non-free Apple devices" &&
 set -x
-time ffmpeg $verbose -y -i "$input" -movflags +faststart -c:v libx264 -threads 0 -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
+time ffmpeg $verbose -y -i "$input" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
 
 set +x
 echo -e "\033[1;34m$0\033[m encoding $out for everything else"
 set -x
 
-time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads 0 "$out"
+time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
 
 set +x
 ) 2>&1 | tee -a "$log"
@@ -106,7 +106,7 @@ else
 fi
 
 echo -e "\033[1;34m$0\033[m created $du $(test "$format_duration" && echo duration: $format_duration seconds)"
-echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' '), $(stat -c %s "$input" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
+echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' ') $(stat -c %s "$input" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
 if test "$dest"
 then
