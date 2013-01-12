@@ -6,6 +6,12 @@ test -f ~/.r2d2 && source ~/.r2d2
 # static builds do not have x11grab enabled, so you can only generate HTML5 video not capture
 test -f ffmpeg && export PATH=.:$PATH # Use local version of ffmpeg
 
+die() { echo "$@"; exit 1; }
+require() { which $1 &> /dev/null; }
+for prg in xdpyinfo ffmpeg; do
+	require $prg || die "needs ${prg} installed"
+done
+
 usage() {
 cat $(readlink -f $(dirname $0))/README.md
 }
