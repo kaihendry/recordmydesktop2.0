@@ -1,6 +1,6 @@
 # recordmydesktop 2.0 - r2d2
 
-**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0 -- [static builds of ffmpeg](http://ffmpeg.gusari.org/static/) are good for processing, however they do not support x11grab currently.
+**REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 1.0 -- [static builds of ffmpeg](http://ffmpeg.gusari.org/static/) are good for processing, however they do not support x11grab currently and `xdpyinfo` from xorg-xdpyinfo package in Archlinux.
 
 A better tool than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
