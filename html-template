@@ -4,7 +4,6 @@
 # Generate HTML source
 
 html="${out%.*}.html"
-#eval $(ffprobe -v 0 -of flat=s=_ -show_format "$out")
 
 cat <<END > $html
 <!DOCTYPE html>
@@ -32,8 +31,7 @@ test -f "$mp4" && ffprobe -v warning -show_format "$mp4" >> $html
 cat <<END >> $html
 </pre>
 
-<p><a href=$(basename $log)>ffmpeg logfile</a></p>
-<p><a href=https://github.com/kaihendry/recordmydesktop2.0>r2d2.sh source</a></p>
+<p><a href=https://github.com/kaihendry/recordmydesktop2.0>source code</a></p>
 </body>
 </html>
 END

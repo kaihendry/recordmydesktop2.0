@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+verbose="-v warning"
+mixer="90%"
+while getopts "mnhv" o
+do
+	case "$o" in
+	(m) mixer="";;
+	(n) nosound="yes";;
+	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
+	(h) less $(readlink -f $(dirname $0))/README.md; exit;;
+	(v) verbose="";; # funnily ffmpeg is verbose by default
+	(*) break;;
+	esac
+done
+shift $((OPTIND - 1))
+
+lockfile=/tmp/r2d2
+
+if test -f $lockfile
+then
+	pid=$(awk '{print $1}' $lockfile)
+	if kill -0 $pid
+	then
+		kill $pid
+		echo Killed $(cat $lockfile)
+		logger x11captured: $(du -h $(awk '{print $2}' $lockfile))
+		rm $lockfile
+		exit
+	else
+		rm $lockfile
+	fi
+fi
+
+if test "$1"
+then
+	output=$1
+else
+	output="$(dirname $(readlink -f $0))/test.mkv"
+fi
+
+# Only create RAW file if one does not exist
+if test -f "$output"
+then
+	echo $output already exists
+	logger $(basename $0): $output already exists
+	exit 1
+fi
+
+die() { echo "$@"; exit 1; }
+require() { which $1 &> /dev/null; }
+for prg in xdpyinfo ffmpeg; do
+	require $prg || die "needs ${prg} installed"
+done
+
+# Set a sane recording volume
+if test "$mixer"
+then
+	amixer set "Capture" "$mixer"
+	test "$verbose" || echo -e "\033[1;34m$0\033[m Set recording volume to $mixer"
+fi
+
+res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
+
+if test "$nosound"
+then
+	ffmpeg $verbose $duration -threads auto -f x11grab -s $res -i :0.0 -vcodec ffvhuff $output 2>&1 >> /tmp/r2d2.log &
+else
+	ffmpeg $verbose $duration -threads auto -f x11grab -s $res -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $output 2>&1 >> /tmp/r2d2.log &
+fi
+
+echo "$! $(readlink -f $output)" > $lockfile
+echo -e "\033[1;34m$0\033[m Capturing $res, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
