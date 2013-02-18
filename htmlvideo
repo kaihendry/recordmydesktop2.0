@@ -10,13 +10,21 @@ fi
 
 input="$1"
 
-test "$today" || today="$(date --iso-8601=date)"
-out=$today/$(basename ${input} .mkv).webm
-mkdir "$today" &>/dev/null || true
-mp4="${out%.*}.mp4" 
-
 eval $(ffprobe -v 0 -of flat=s=_ -show_format "$input") # neat trick to get video variables into shell
 test "$format_tags_creation_time" && today=$(echo $format_tags_creation_time | awk '{print $1}') # keep directory dates related to video file
+
+test "$today" || today="$(date --iso-8601=date)"
+out=$today/$(basename ${input%.*}).webm
+
+if test -f "$out"
+then
+	echo $out already exists
+	exit
+fi
+
+
+mkdir "$today" &>/dev/null || true
+mp4="${out%.*}.mp4" 
 
 time ffmpeg $verbose -y -i "$input" -movflags +faststart -c:v libx264 -threads auto -vprofile baseline -level 30 -maxrate 10000000 -bufsize 10000000 -acodec aac -strict experimental $mp4
 
