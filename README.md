@@ -43,10 +43,6 @@ Same principle as `ffmpeg2theora`.
 
 	htmlvideo GOPR0940.MP4
 
-or on a server
-
-	htmlvideo b.mov
-
 # How to record yourself if you have a Webcam in your laptop
 
 Using [guvcview](http://r2d2.webconverger.org/2012-11-15/guvcview.html).
