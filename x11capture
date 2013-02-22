@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 verbose="-v warning"
-mixer="90%"
+mixer="80%"
 while getopts "mnhv" o
 do
 	case "$o" in

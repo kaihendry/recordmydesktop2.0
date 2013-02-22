@@ -32,14 +32,12 @@ time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads a
 
 . $(dirname $0)/html-template
 
+echo -e "\033[1;34m$0\033[m created $(test "$format_duration" && echo duration: $format_duration seconds)"
+
 if test -f "$mp4"
 then
-	du=$(du -h "$out" "$mp4" | tr '\n\t' ' ')
-else
-	du=$(du -h "$out" | tr '\t' ' ')
+	echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$mp4" | tr '\n\t' ' ') $(stat -c %s "$input" "$mp4" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 fi
-
-echo -e "\033[1;34m$0\033[m created $du $(test "$format_duration" && echo duration: $format_duration seconds)"
 echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' ') $(stat -c %s "$input" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
 test -f ~/.r2d2 && source ~/.r2d2
