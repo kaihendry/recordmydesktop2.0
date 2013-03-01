@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+#duration="-t 5"
 verbose="-v warning"
 mixer="80%"
 while getopts "mnhv" o
@@ -64,9 +65,9 @@ res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
 if test "$nosound"
 then
-	ffmpeg $verbose $duration -threads auto -f x11grab -s $res -i :0.0 -vcodec ffvhuff $output 2>&1 >> /tmp/r2d2.log &
+	ffmpeg $verbose -threads auto -f x11grab -s $res -i :0.0 -vcodec ffvhuff $duration $output 2>&1 >> /tmp/r2d2.log &
 else
-	ffmpeg $verbose $duration -threads auto -f x11grab -s $res -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $output 2>&1 >> /tmp/r2d2.log &
+	ffmpeg $verbose -threads auto -f x11grab -s $res -i :0.0 -f alsa -i hw:0,0 -acodec pcm_s16le -vcodec ffvhuff $duration $output 2>&1 >> /tmp/r2d2.log &
 fi
 
 echo "$! $(readlink -f $output)" > $lockfile
