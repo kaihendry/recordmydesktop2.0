@@ -37,7 +37,7 @@ if test "$1"
 then
 	output=$1
 else
-	output="$(dirname $(readlink -f $0))/test.mkv"
+	output="$(dirname $(readlink -f $0))/$(date +%s).mkv"
 fi
 
 # Only create RAW file if one does not exist
