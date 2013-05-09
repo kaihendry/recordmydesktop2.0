@@ -10,9 +10,34 @@ Aims to be a better tool than
 screencasts from Archlinux (typically) to HTML5 video using .webm (For Firefox)
 and .mp4 (H264) for Apple.
 
-If you run `htmlvideo` upon an already existing mov or mp4 file, it will create
-/ process the HTML, MP4 & WEBM for HTML viewing, so you can think of this tool
-like `ffmpeg2theora`.
+# Setting up an external USB microphone
+
+For optimal sound quality recordings you need to setup the 3rd party microphone
+as the default input device with the cryptic `~/.asoundrc` syntax, like so:
+
+	pcm.usb
+	{
+		type hw
+		# Find the card name with `arecord -L`
+		card REPLACE_ME_WITH_CARD_ID_OF_YOUR_USB_MIC
+	}
+
+	pcm.!default
+	{
+		type asym
+		playback.pcm
+		{
+			type plug
+			slave.pcm "dmix"
+		}
+		capture.pcm
+		{
+			type plug
+			slave.pcm "usb"
+		}
+	}
+
+If you know an easier way, please let me know!
 
 # Incorporating audio recording from another source like your iPhone & headphones mic
 
