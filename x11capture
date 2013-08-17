@@ -67,7 +67,7 @@ if test "$nosound"
 then
 	ffmpeg $verbose -threads auto -f x11grab -s $res -i :0.0 -vcodec ffvhuff $duration $output 2>&1 >> /tmp/r2d2.log &
 else
-	ffmpeg $verbose -threads auto -f x11grab -s $res -i :0.0 -f alsa -i default -acodec pcm_s16le -vcodec ffvhuff $duration $output 2>&1 >> /tmp/r2d2.log &
+	ffmpeg $verbose -threads auto -f x11grab -s $res -i :0.0 -f alsa -i pulse -acodec pcm_s16le -vcodec ffvhuff $duration $output 2>&1 >> /tmp/r2d2.log &
 fi
 
 echo "$! $(readlink -f $output)" > $lockfile

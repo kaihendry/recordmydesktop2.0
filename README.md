@@ -5,41 +5,31 @@ ffmpeg](http://ffmpeg.gusari.org/static/) are good for processing, however they
 do not support x11grab currently and `xdpyinfo` from xorg-xdpyinfo package in
 Archlinux.
 
-Aims to be a better tool than
+[Pulseaudio](http://www.freedesktop.org/wiki/Software/PulseAudio/) - like it or
+not, it's the only sane way to manage complex recordings:
+
+	pactl load-module module-loopback
+
+`x11capture` & `htmlvideo` aim to be better tools than
 [recordmydesktop](http://en.wikipedia.org/wiki/RecordMyDesktop) for creating
 screencasts from Archlinux (typically) to HTML5 video using .webm (For Firefox)
 and .mp4 (H264) for Apple.
 
-# Setting up an external USB microphone
+# Convert old videos to HTML5 video formats
 
-For optimal sound quality recordings you need to setup the 3rd party microphone
-as the default input device with the cryptic `~/.asoundrc` syntax, like so:
+Same principle as `ffmpeg2theora`.
 
-	pcm.usb
-	{
-		type hw
-		# Find the card name with `arecord -L`
-		card REPLACE_ME_WITH_CARD_ID_OF_YOUR_USB_MIC
-	}
+	htmlvideo GOPR0940.MP4
 
-	pcm.!default
-	{
-		type asym
-		playback.pcm
-		{
-			type plug
-			slave.pcm "dmix"
-		}
-		capture.pcm
-		{
-			type plug
-			slave.pcm "usb"
-		}
-	}
+# How to record yourself if you have a Webcam in your laptop
 
-If you know an easier way, please let me know!
+	gst-launch-1.0 v4l2src ! xvimagesink
 
-# Incorporating audio recording from another source like your iPhone & headphones mic
+or
+
+	vlc v4l2:///dev/video0
+
+# Advanced: Incorporating audio recording from another source like your iPhone & headphones mic
 
 <img width="128" height="227" src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />
 
@@ -61,21 +51,6 @@ like:
 And now finish off the process with:
 
 	htmlvideo output.mkv
-
-# Convert old videos to HTML5 video formats
-
-Same principle as `ffmpeg2theora`.
-
-	htmlvideo GOPR0940.MP4
-
-# How to record yourself if you have a Webcam in your laptop
-
-Using [guvcview](http://r2d2.webconverger.org/2012-11-15/guvcview.html).
-
-# TODO - Great HTML5 video experience
-
-* Improve HTML output using `ffprobe` <http://ffmpeg.org/ffprobe.html#Writers>
-* looking into `mkvmerge` from the mkvtoolnix-cli package for editing the raw
 
 # Furthermore
 

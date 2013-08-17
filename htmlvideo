@@ -14,7 +14,7 @@ eval $(ffprobe -v 0 -of flat=s=_ -show_format "$input") # neat trick to get vide
 test "$format_tags_creation_time" && today=$(echo $format_tags_creation_time | awk '{print $1}') # keep directory dates related to video file
 
 test "$today" || today="$(date --iso-8601=date)"
-out=$today/$(basename ${input%.*}).webm
+out=$today/$(basename "${input%.*}").webm
 
 if test -f "$out"
 then
