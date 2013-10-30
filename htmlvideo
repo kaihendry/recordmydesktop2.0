@@ -26,9 +26,9 @@ fi
 mkdir "$today" &>/dev/null || true
 mp4="${out%.*}.mp4" 
 
-time ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 -threads auto -vprofile baseline -acodec aac -strict experimental $mp4
+time ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 -vprofile baseline -acodec aac -strict experimental $mp4
 
-time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx -threads auto "$out"
+time ffmpeg $verbose -y -i "$input" -c:a libvorbis -q:a 7 -c:v libvpx "$out"
 
 . $(dirname $0)/html-template
 
