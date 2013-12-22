@@ -1,20 +1,12 @@
-#!/bin/bash
-# $out - webm
-# optional $mp4
+#!/bin/bash -x
 # Generate HTML source
 
 html="${out%.*}.html"
 
 cat <<END > $html
 <video controls width=640 height=360>
-<source src=$(basename $out) type=video/webm>
-END
-
-test -f "$mp4" && echo "<source src=$(basename $mp4) type=video/mp4>" >> $html
-
-cat <<END >> $html
+<source src=$(basename $out) type=video/mp4>
 </video>
 END
 
 ffprobe -v quiet -print_format json -show_format $out > $out.json
-test -f "$mp4" && ffprobe -v quiet -print_format json -show_format "$mp4" > $mp4.json
