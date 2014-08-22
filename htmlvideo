@@ -36,7 +36,7 @@ mkdir "$today" &>/dev/null || true
 
 echo -e "\033[1;34m$0\033[m Generating $out"
 time ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
-	-vprofile baseline -acodec aac -strict experimental $out
+	-vprofile baseline -acodec aac -strict experimental "$out"
 
 # Generate HTML
 . $(dirname $0)/html-template
@@ -50,5 +50,5 @@ test -f ~/.r2d2 && source ~/.r2d2
 if test "$dest"
 then
 	echo rsync -r --progress --remove-source-files $today $dest
-	echo -e "\033[1;34m$0\033[m SHARE URL: http://$(basename $dest)/$html"
+	echo -e "\033[1;34m$0\033[m SHARE URL: http://$(basename "$dest")/$html"
 fi
