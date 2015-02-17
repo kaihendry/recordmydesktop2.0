@@ -29,6 +29,10 @@ or
 
 	vlc v4l2:///dev/video0
 
+# cannot open audio device pulse (No such file or directory) pulse: Input/output error
+
+You need `sudo pacman -S pulseaudio-alsa`
+
 # Advanced: Incorporating audio recording from another source like your iPhone & headphones mic
 
 <img width="128" height="227" src="http://r2d2.webconverger.org/2012-10-27/voice-recorder.png" alt="ios6 voice recorder" />

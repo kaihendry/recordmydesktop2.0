@@ -6,9 +6,8 @@ mixer="80%"
 while getopts "mnhv" o
 do
 	case "$o" in
-	(m) mixer="";;
-	(n) nosound="yes";;
 	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
+	(n) nosound="yes";;
 	(h) less $(readlink -f $(dirname $0))/README.md; exit;;
 	(v) verbose="";; # funnily ffmpeg is verbose by default
 	(*) break;;
@@ -53,13 +52,6 @@ require() { which $1 &> /dev/null; }
 for prg in xdpyinfo ffmpeg; do
 	require $prg || die "needs ${prg} installed"
 done
-
-# Set a sane recording volume
-if test "$mixer"
-then
-	amixer set "Capture" "$mixer"
-	test "$verbose" || echo -e "\033[1;34m$0\033[m Set recording volume to $mixer"
-fi
 
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
