@@ -51,10 +51,7 @@ ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx26
 	$rotate \
 	-vprofile baseline -acodec aac -strict experimental "$out"
 
-# Generate HTML
-. $(dirname $0)/htmltemplate
-
-echo -e "\033[1;34m$0\033[m created $(test "$format_duration" && echo duration: $format_duration seconds)"
+echo -e "\033[1;34m$0\033[m $(test "$format_duration" && echo duration: $format_duration seconds)"
 
 echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' ') $(stat -c %s "$input" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
@@ -63,5 +60,5 @@ test -f ~/.r2d2 && source ~/.r2d2
 if test "$dest"
 then
 	echo rsync -r --progress --remove-source-files $today $dest
-	echo -e "\033[1;34m$0\033[m SHARE URL: http://$(basename "$dest")/$html"
+	echo -e "\033[1;34m$0\033[m SHARE URL: http://$(basename "$dest")/$out"
 fi
