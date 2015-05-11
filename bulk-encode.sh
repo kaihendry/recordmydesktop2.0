@@ -15,7 +15,7 @@ shopt -s globstar
 i=0; files=("${1:-.}"/**/*.mp4); number=${#files[@]}; for f in "${files[@]}"
 do
 	((i++))
-	echo $i/$number $(du -h "$f")
+	printf '%s/%s ' $i $number; du -h "$f"
 	test "$input" == "a" || read input </dev/tty
 	if [[ $input =~ ^[Yya]$ ]]
 	then
