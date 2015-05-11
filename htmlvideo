@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-verbose="-v warning" # quieten ffmpeg's default verbose output
+verbose="-v panic" # quieten ffmpeg's default verbose output
 
 if ! ffmpeg -version | head -n1
 then
