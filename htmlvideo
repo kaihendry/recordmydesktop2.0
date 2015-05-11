@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-verbose="-v panic" # quieten ffmpeg's default verbose output
-
 if ! ffmpeg -version | head -n1
 then
 	echo Missing ffmpeg
@@ -45,9 +43,9 @@ else
 fi
 
 # Convert to MP4 playable by most browsers and most importantly IOS Safari
-if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
+if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
-	-vprofile baseline -acodec aac -strict experimental "$out"
+	-vprofile baseline -acodec aac -strict experimental "$out" &> /dev/null
 then
 	rm -f "$out"
 	echo Error encoding "$input"
