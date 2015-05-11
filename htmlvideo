@@ -50,7 +50,7 @@ if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg $verbose -y -i "$input" -m
 	-vprofile baseline -acodec aac -strict experimental "$out"
 then
 	rm -f "$out"
-	echo Error encoding "$input"
+	echo Error encoding "$input", see /tmp/htmlvideo.log for details
 	exit 1
 fi
 
