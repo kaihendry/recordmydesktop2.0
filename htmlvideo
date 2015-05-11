@@ -45,7 +45,7 @@ else
 fi
 
 # Convert to MP4 playable by most browsers and most importantly IOS Safari
-if ! ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
+if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
 	-vprofile baseline -acodec aac -strict experimental "$out"
 then
