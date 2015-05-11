@@ -30,7 +30,8 @@ out=$today/$(basename "${input%.*}").mp4
 if test -f "$out"
 then
 	echo $out already exists
-else
+	exit
+fi
 
 mkdir "$today" &>/dev/null || true
 
@@ -48,10 +49,10 @@ if ! ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v l
 	$rotate \
 	-vprofile baseline -acodec aac -strict experimental "$out"
 then
-	rm $out
-	echo Error encoding
+	rm -f "$out"
+	echo Error encoding "$input"
 	exit 1
 fi
 
 echo -e "\033[1;34m$0\033[m $(test "$format_duration" && echo duration: $format_duration seconds)"
-echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' ') $(for i in "$input" "$out"; do wc -c < "$i"; done | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
+echo -e compressed $(du -h "$input" "$out" | tr '\n\t' ' ') #$(for i in "$input" "$out"; do wc -c < "$i"; done | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size
