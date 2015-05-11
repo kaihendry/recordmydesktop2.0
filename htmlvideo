@@ -29,13 +29,13 @@ out=$today/$(basename "${input%.*}").mp4
 
 if test -f "$out"
 then
-	echo $out already exists
+	echo 🎥 $out already exists
 	exit
 fi
 
 mkdir "$today" &>/dev/null || true
 
-echo -e "\033[1;34m$0\033[m Generating $out"
+echo "🎥 Generating $out"
 if test "$streams_stream_0_tags_rotate"
 then
 	# rotate video by what metadata says and then clear the rotation metadata
@@ -54,5 +54,5 @@ then
 	exit 1
 fi
 
-echo -e "\033[1;34m$0\033[m $(test "$format_duration" && echo duration: $format_duration seconds)"
-echo -e compressed $(du -h "$input" "$out" | tr '\n\t' ' ') #$(for i in "$input" "$out"; do wc -c < "$i"; done | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size
+test "$format_duration" && echo 🎥 Duration: $format_duration seconds
+echo "🎥 Compressed $(du -h "$input" "$out" | tr '\n\t' ' ')$(for i in "$input" "$out"; do wc -c < "$i"; done | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% size saving"
