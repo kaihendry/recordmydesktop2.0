@@ -32,8 +32,7 @@ out=$today/$(basename "${input%.*}").mp4
 if test -f "$out"
 then
 	echo $out already exists
-	exit
-fi
+else
 
 mkdir "$today" &>/dev/null || true
 
@@ -47,18 +46,25 @@ else
 fi
 
 # Convert to MP4 playable by most browsers and most importantly IOS Safari
-ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
+if ! ffmpeg $verbose -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
 	-vprofile baseline -acodec aac -strict experimental "$out"
+then
+	rm $out
+	echo Error encoding
+	exit 1
+fi
 
 echo -e "\033[1;34m$0\033[m $(test "$format_duration" && echo duration: $format_duration seconds)"
 
 echo -e "\033[1;34m$0\033[m compressed $(du -h "$input" "$out" | tr '\n\t' ' ') $(stat -c %s "$input" "$out" | awk 't{printf("%.2f\n",100*$1/t)}{t=$1}')% of size"
 
+fi
+
 test -f ~/.r2d2 && source ~/.r2d2
 
 if test "$dest"
 then
-	echo rsync -r --progress --remove-source-files $today $dest
-	echo -e "\033[1;34m$0\033[m SHARE URL: http://$(basename "$dest")/$out"
+	echo s3cmd -P put $out s3://s.natalian.org/$today/
+	echo -e "\033[1;34m$0\033[m SHARE URL: http://s.natalian.org/$out"
 fi
