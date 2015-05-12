@@ -1,5 +1,9 @@
 # recordmydesktop 2.0
 
+FFMPEG based scripts to record your Desktop or encoding videos for Web playback
+
+<img src=http://s.natalian.org/2015-05-12/bulk-encode.png alt="bulk encoding videos for the Web">
+
 **REQUIREMENTS**: [FFMPEG](http://ffmpeg.org/) >= 2.5
 
 [Pulseaudio](http://www.freedesktop.org/wiki/Software/PulseAudio/) and
