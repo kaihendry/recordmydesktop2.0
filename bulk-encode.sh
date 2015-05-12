@@ -12,7 +12,7 @@ shift "$((OPTIND-1))" # Shift off the options and optional --.
 shopt -s nocaseglob
 shopt -s globstar
 
-i=0; files=("${1:-.}"/**/*.mp4); number=${#files[@]}; for f in "${files[@]}"
+i=0; files=("${1:-.}"/**/*.{mp4,mov}); number=${#files[@]}; for f in "${files[@]}"
 do
 	((i++))
 	printf '%s/%s ' $i $number; du -h "$f"
