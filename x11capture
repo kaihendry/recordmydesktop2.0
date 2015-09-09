@@ -52,7 +52,7 @@ done
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
-ffmpeg -f x11grab -video_size $res -i :0 -f alsa -i pulse -acodec pcm_s16le -c:v libx264 $output &>> /tmp/r2d2.log &
+ffmpeg -f x11grab -video_size $res -i $DISPLAY -f alsa -i pulse -acodec pcm_s16le -c:v libx264 $output &>> /tmp/r2d2.log &
 
 echo "$! $(readlink -f $output)" > $lockfile
 echo -e "\033[1;34m$0\033[m Capturing $res, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
