@@ -18,7 +18,7 @@ then
 	pid=$(awk '{print $1}' $lockfile)
 	if kill -0 $pid
 	then
-		kill $pid
+		kill -INT $pid
 		echo Killed $(cat $lockfile)
 		logger x11captured: $(du -h $(awk '{print $2}' $lockfile))
 		rm $lockfile

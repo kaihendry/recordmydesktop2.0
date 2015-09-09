@@ -33,15 +33,6 @@ fi
 
 mkdir "$today" &>/dev/null || true
 
-echo "🎥 Generating $out"
-if test "$streams_stream_0_tags_rotate"
-then
-	# rotate video by what metadata says and then clear the rotation metadata
-	rotate="-vf rotate=$streams_stream_0_tags_rotate*(PI/180) -metadata:s:v rotate=0"
-else
-	rotate=""
-fi
-
 # Convert to MP4 playable by most browsers and most importantly IOS Safari
 if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "$input" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
