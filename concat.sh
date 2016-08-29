@@ -9,6 +9,6 @@ do
 	echo file \'$(readlink -f "$i")\' >> $tmp
 done
 
-#cat $tmp
+cat $tmp
 
-ffmpeg -f concat -i $tmp -c copy output.mp4
+ffmpeg -safe 0 -f concat -i $tmp -c copy output.mp4
