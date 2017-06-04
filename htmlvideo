@@ -17,7 +17,6 @@ input="$1"
 eval $(ffprobe -v 0 -of flat=s=_ -show_format "$input") # neat trick to get video variables into shell
 eval $(ffprobe -v 0 -of flat=s=_ -show_streams "$input")
 
-
 if test "$format_tags_creation_time" # try get date from video's metadata
 then
 	today=$(echo $format_tags_creation_time | awk '{print $1}' | cut -c-10)
@@ -34,10 +33,9 @@ fi
 
 mkdir "$today" &>/dev/null || true
 
-# Convert to MP4 playable by most browsers and most importantly IOS Safari
-if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
+if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -c:v libx264 \
 	$rotate \
-	-vprofile high444 -acodec aac "${output}" &> /dev/null
+	-acodec aac "${output}" &> /dev/null
 then
 	rm -f "${output}"
 	echo Error encoding "${input}", see /tmp/htmlvideo.log for details
