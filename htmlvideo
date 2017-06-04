@@ -33,7 +33,7 @@ fi
 
 mkdir "$today" &>/dev/null || true
 
-if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -c:v libx264 \
+if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
 	-acodec aac "${output}" &> /dev/null
 then
