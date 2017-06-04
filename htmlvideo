@@ -37,7 +37,7 @@ mkdir "$today" &>/dev/null || true
 # Convert to MP4 playable by most browsers and most importantly IOS Safari
 if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
 	$rotate \
-	-vprofile high444 -acodec aac -strict experimental "${output}" &> /dev/null
+	-vprofile high444 -acodec aac "${output}" &> /dev/null
 then
 	rm -f "${output}"
 	echo Error encoding "${input}", see /tmp/htmlvideo.log for details
