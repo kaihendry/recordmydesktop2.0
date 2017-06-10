@@ -45,9 +45,9 @@ fi
 test "$format_duration" && printf "🎥 Duration: %.1f seconds\n" $format_duration
 
 function size {
-	echo $(du -h ${1} | tr '\n\t' ' ')
+	echo $(du -h "${1}" | tr '\n\t' ' ')
 }
 
-echo -n "🎥 Input: $(size ${input}) Output: $(size ${output})"
+echo -n "🎥 Input: $(size "${input}") Output: $(size "${output}")"
 # Space savings https://en.wikipedia.org/wiki/Data_compression_ratio
-printf " Space savings: %.0f%%\n" $(bc <<< "scale=2; (1 - $(wc -c < ${output}) / $(wc -c < ${input}) ) * 100")
+printf " Space savings: %.0f%%\n" $(bc <<< "scale=2; (1 - $(wc -c < "${output}") / $(wc -c < "${input}") ) * 100")
