@@ -32,7 +32,7 @@ if test "$1"
 then
 	output=$1
 else
-	output="$(dirname $(readlink -f $0))/$(date +%s).mkv"
+	output="$(dirname $(readlink -f $0))/$(date +%s).mp4"
 fi
 
 # Only create RAW file if one does not exist
@@ -52,7 +52,11 @@ done
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
-ffmpeg -f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec pcm_s16le -c:v libx264 $output &>> /tmp/r2d2.log &
+FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
+	-re -f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec aac \
+	-vaapi_device /dev/dri/renderD128 \
+	-movflags +faststart -vf 'format=nv12|vaapi,hwupload' \
+	-c:v h264_vaapi $output &
 
 echo "$! $(readlink -f $output)" > $lockfile
 echo -e "\033[1;34m$0\033[m Capturing $res, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"

@@ -1,4 +1,5 @@
 #!/bin/bash -e
+# https://trac.ffmpeg.org/wiki/Hardware/VAAPI
 
 if ! ffmpeg -version | head -n1
 then
@@ -33,7 +34,8 @@ fi
 
 mkdir "$today" &>/dev/null || true
 
-if ! FFREPORT=file=/tmp/htmlvideo.log:level=32 ffmpeg -y -i "${input}" -movflags +faststart -pix_fmt yuv420p -c:v libx264 \
+if ! FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -y -i "${input}" \
+	-vaapi_device /dev/dri/renderD128 -movflags +faststart -vf 'format=nv12|vaapi,hwupload' -c:v h264_vaapi \
 	$rotate \
 	-acodec aac "${output}" &> /dev/null
 then
