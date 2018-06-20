@@ -28,7 +28,7 @@ then
 	fi
 fi
 
-output="$(dirname $(readlink -f $0))/$(date +%Y-%m-%d)/${1:-$(date +%s)}.mp4"
+output="$(dirname $(readlink -f $0))/$(date +%Y-%m-%d)/${1:-$(date +%s)}.mkv"
 mkdir -p $(dirname $output)
 
 # Only create RAW file if one does not exist
@@ -49,11 +49,8 @@ res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
 FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
-	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec aac \
-	-vaapi_device /dev/dri/renderD128 \
-	-vsync 0 \
-	-movflags +faststart -vf "hwupload,scale_vaapi=format=nv12" \
-	-c:v h264_vaapi $output &
+	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec pcm_s16le -c:v libx264 \
+	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
 echo -e "\033[1;34m$0\033[m Capturing $res to $output, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
