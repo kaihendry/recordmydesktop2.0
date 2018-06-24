@@ -47,15 +47,12 @@ done
 
 res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
-# https://trac.ffmpeg.org/wiki/Capture/Desktop
 # https://trac.ffmpeg.org/wiki/Hardware/VAAPI
-# ffmpeg -vaapi_device /dev/dri/renderD128 -f x11grab -video_size 1920x1080 -i :0 -vf 'hwupload,scale_vaapi=format=nv12' -c:v h264_vaapi -qp 24 output.mp4
+# -f pulse -i default -acodec aac  \
 
-FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
-	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec aac \
-	-vaapi_device /dev/dri/renderD128 \
-	-qp 24 -vf "hwupload,scale_vaapi=format=nv12" \
-	-c:v h264_vaapi $output &
+FFREPORT=file=/tmp/$(basename $output).log sudo ffmpeg -report -hide_banner -loglevel quiet \
+	-device /dev/dri/card0 -f kmsgrab -i - -vf 'hwmap=derive_device=vaapi,scale_vaapi=w=2560:h=1440:format=nv12' -c:v h264_vaapi -qp 24 \
+	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
 echo -e "\033[1;34m$0\033[m Capturing $res to $output, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
