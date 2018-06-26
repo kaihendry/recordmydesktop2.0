@@ -52,6 +52,7 @@ res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 FFREPORT=file=/tmp/$(basename $output).log ffmpeg \
 	-report -hide_banner -loglevel quiet \
 	-f pulse -i default -acodec aac  \
+	-framerate 60 \
 	-device /dev/dri/card0 -f kmsgrab -i - -vf 'hwmap=derive_device=vaapi,scale_vaapi=w=2560:h=1440:format=nv12' -c:v h264_vaapi -qp 24 \
 	$output &
 echo "$! $(readlink -f $output)" > $lockfile
