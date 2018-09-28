@@ -53,4 +53,4 @@ FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
-echo -e "\033[1;34m$0\033[m Capturing $res to $output, kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
+echo -e "\033[1;34m$0\033[m Capturing $res to $output kill $(awk '{print $1}' $lockfile) to kill capture or run $0 again"
