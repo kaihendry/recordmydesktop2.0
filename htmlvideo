@@ -35,12 +35,13 @@ fi
 mkdir "$today" &>/dev/null || true
 
 if ! FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -y -i "${input}" \
+	-metadata creation_time="$(date -u "+%FT%T.%6NZ" -r "${input}")" \
 	-vaapi_device /dev/dri/renderD128 -movflags +faststart -vf 'format=nv12|vaapi,hwupload' -c:v h264_vaapi \
 	$rotate \
 	-acodec aac "${output}" &> /dev/null
 then
 	rm -f "${output}"
-	echo Error encoding "${input}", see /tmp/htmlvideo.log for details
+	echo Error encoding "${input}", see /tmp/$(basename $output).log for details
 	exit 1
 fi
 
