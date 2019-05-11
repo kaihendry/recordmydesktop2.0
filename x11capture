@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+if ! test -z "$WAYLAND_DISPLAY"
+then
+	echo use record instead
+	exit
+fi
+
 while getopts "mnhv" o
 do
 	case "$o" in

@@ -37,6 +37,7 @@ mkdir "$today" &>/dev/null || true
 if ! FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -y -i "${input}" \
 	-metadata creation_time="$(date -u -Is -r "${input}")" \
 	-vaapi_device /dev/dri/renderD128 -movflags +faststart -vf 'format=nv12|vaapi,hwupload' -c:v h264_vaapi \
+	-metadata creation_time="$(date -u -Ins -r "${input}")" \
 	$rotate \
 	-acodec aac "${output}" &> /dev/null
 then
@@ -50,6 +51,9 @@ test "$format_duration" && printf "🎥 Duration: %.1f seconds\n" $format_durati
 function size {
 	echo $(du -h "${1}" | tr '\n\t' ' ')
 }
+
+# Ensure creation time is the same
+touch -r "${input}" "${output}"
 
 echo -n "🎥 Input: $(size "${input}") Output: $(size "${output}")"
 # Space savings https://en.wikipedia.org/wiki/Data_compression_ratio
