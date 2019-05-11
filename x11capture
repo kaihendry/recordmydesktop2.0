@@ -2,7 +2,7 @@
 
 if ! test -z "$WAYLAND_DISPLAY"
 then
-	echo use record instead
+	exec record
 	exit
 fi
 

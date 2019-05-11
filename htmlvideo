@@ -7,13 +7,44 @@ then
 	exit 1
 fi
 
-if ! test -f "$1"
+# Usage info
+show_help() {
+cat << EOF
+Usage: ${0##*/} [-w] [FILE]
+convert video file for the Web
+
+    -w          overwrite input file
+EOF
+}
+
+overwrite=0
+
+OPTIND=1
+
+while getopts wh opt; do
+    case $opt in
+        h)
+            show_help
+            exit 0
+            ;;
+        w)  overwrite=$((overwrite+1))
+            ;;
+        *)
+            show_help >&2
+            exit 1
+            ;;
+    esac
+done
+shift "$((OPTIND-1))"   # Discard the options and sentinel --
+
+input="$1"
+echo Input $1
+
+if ! test -f "$input"
 then
 	echo Missing RAW file to encode to MP4
 	exit
 fi
-
-input="$1"
 
 eval $(ffprobe -v 0 -of flat=s=_ -show_format "$input") # neat trick to get video variables into shell
 eval $(ffprobe -v 0 -of flat=s=_ -show_streams "$input")
@@ -58,3 +89,9 @@ touch -r "${input}" "${output}"
 echo -n "🎥 Input: $(size "${input}") Output: $(size "${output}")"
 # Space savings https://en.wikipedia.org/wiki/Data_compression_ratio
 printf " Space savings: %.0f%%\n" $(bc <<< "scale=2; (1 - $(wc -c < "${output}") / $(wc -c < "${input}") ) * 100")
+
+if test $overwrite -eq 1
+then
+	echo overwriting input
+	mv -v "${output}" "${input}"
+fi
