@@ -26,8 +26,19 @@ then
 	then
 		kill -INT $pid
 		echo Killed $(cat $lockfile)
-		logger x11captured: $(du -h $(awk '{print $2}' $lockfile))
+		fn=$(awk '{print $2}' $lockfile)
+		logger x11captured: $(du -h $fn)
 		rm $lockfile
+		filename=$(dmenu -fn "Terminus (TTF):pixelsize=28" -p "Screencast filename" < /dev/null)
+		if test "$filename"
+		then
+			ofilename="$(dirname $(readlink -f ${fn}))/${filename}.mkv"
+			mv -v "$fn" "$ofilename"
+			cd $(dirname "$ofilename")
+			mp4=$(htmlvideo "$ofilename")
+			echo Finally: $mp4
+			upload "$mp4"
+		fi
 		exit
 	else
 		rm $lockfile
