@@ -32,7 +32,7 @@ then
 		filename=$(dmenu -fn "Terminus (TTF):pixelsize=28" -p "Screencast filename" < /dev/null)
 		if test "$filename"
 		then
-			ofilename="$(dirname $(readlink -f ${fn}))/${filename}.mkv"
+			ofilename="$(dirname $(readlink -f ${fn}))/${filename}.mp4"
 			mv -v "$fn" "$ofilename"
 			cd $(dirname "$ofilename")
 			mp4=$(htmlvideo "$ofilename")
@@ -45,7 +45,7 @@ then
 	fi
 fi
 
-output="$(dirname $(readlink -f $0))/$(date +%Y-%m-%d)/${1:-$(date +%s)}.mkv"
+output="$HOME/recordmydesktop2.0/$(date +%Y-%m-%d)/${1:-$(date +%s)}.mp4"
 mkdir -p $(dirname $output)
 
 # Only create RAW file if one does not exist
@@ -66,7 +66,10 @@ res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
 FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
-	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -acodec pcm_s16le -c:v libx264 \
+	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -c:a aac \
+	-vaapi_device /dev/dri/renderD128 \
+	-vf 'hwupload,scale_vaapi=format=nv12' \
+	-c:v h264_vaapi \
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
