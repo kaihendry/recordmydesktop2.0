@@ -28,16 +28,15 @@ then
 		echo Killed $(cat $lockfile)
 		fn=$(awk '{print $2}' $lockfile)
 		logger x11captured: $(du -h $fn)
+		pkill swcursor
+		pkill xcompmgr
 		rm $lockfile
 		filename=$(dmenu -fn "Terminus (TTF):pixelsize=28" -p "Screencast filename" < /dev/null)
 		if test "$filename"
 		then
 			ofilename="$(dirname $(readlink -f ${fn}))/${filename}.mp4"
 			mv -v "$fn" "$ofilename"
-			cd $(dirname "$ofilename")
-			mp4=$(htmlvideo "$ofilename")
-			echo Finally: $mp4
-			upload "$mp4"
+			upload "$ofilename"
 		fi
 		exit
 	else
@@ -62,14 +61,14 @@ for prg in xdpyinfo ffmpeg; do
 	require $prg || die "needs ${prg} installed"
 done
 
-res="$(xdpyinfo | awk '/dimensions:/ { print $2; exit }')"
+xcompmgr &
+cd /home/hendry/tmp/swcursor/ && ./swcursor &
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
+# https://raw.githubusercontent.com/gilesp/video-presentation/master/capture.sh
 FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
-	-f x11grab -video_size $res -i $DISPLAY -f pulse -i default -c:a aac \
-	-vaapi_device /dev/dri/renderD128 \
-	-vf 'hwupload,scale_vaapi=format=nv12' \
-	-c:v h264_vaapi \
+	-f pulse -i default -c:a aac \
+	-crtc_id 48 -framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=2560:h=1440:format=nv12 -c:v h264_vaapi \
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
