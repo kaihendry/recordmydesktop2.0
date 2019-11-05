@@ -2,6 +2,11 @@
 
 https://s.natalian.org/2019-10-28/hardware-encoding.mp4
 
+# kmsgrab needs elevated permissions
+
+	sudo setcap cap_sys_admin+ep /usr/bin/ffmpeg
+
+
 `x11capture` assumes **INTEL HARDWARE** for hardware encoding.
 
 Relies on https://github.com/andykitchen/swcursor for showing a readable cursor.
