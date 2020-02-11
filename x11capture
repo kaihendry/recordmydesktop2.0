@@ -69,8 +69,7 @@ cd /home/hendry/tmp/swcursor/ && ./swcursor &
 export FFREPORT=file=/tmp/$(basename $output).log
 echo Logging to $FFREPORT
 
-# ffmpeg -device /dev/dri/card0 -f kmsgrab -i - -vf 'hwmap=derive_device=vaapi,scale_vaapi=w=1920:h=1080:format=nv12' -c:v h264_vaapi -qp 24 output.mp4
-ffmpeg -report -hide_banner -loglevel quiet \
+ffmpeg -report \
 	-f pulse -i default -c:a aac \
 	-framerate 30 -device /dev/dri/card0 -f kmsgrab -i - -vf 'hwmap=derive_device=vaapi,scale_vaapi=w=2560:h=1440:format=nv12' -c:v h264_vaapi -qp 24 \
 	$output &
