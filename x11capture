@@ -62,16 +62,20 @@ for prg in xdpyinfo ffmpeg; do
 done
 
 xcompmgr &
-cd /home/hendry/tmp/swcursor/ && ./swcursor &
+test -d /home/hendry/tmp/swcursor/ && cd /home/hendry/tmp/swcursor/ && ./swcursor &
 
 # https://trac.ffmpeg.org/wiki/Capture/Desktop
 # https://raw.githubusercontent.com/gilesp/video-presentation/master/capture.sh
 export FFREPORT=file=/tmp/$(basename $output).log
 echo Logging to $FFREPORT
 
+size=$(xdpyinfo | grep dimensions | awk '{print $2;}')
+x=${size%x*}
+y=${size#*x}
+
 ffmpeg -report \
 	-f pulse -i default -c:a aac \
-	-framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=2560:h=1440:format=nv12 -c:v h264_vaapi \
+	-framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=${x}:h=${y}:format=nv12 -c:v h264_vaapi \
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
