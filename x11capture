@@ -68,7 +68,7 @@ cd /home/hendry/tmp/swcursor/ && ./swcursor &
 # https://raw.githubusercontent.com/gilesp/video-presentation/master/capture.sh
 FFREPORT=file=/tmp/$(basename $output).log ffmpeg -report -hide_banner -loglevel quiet \
 	-f pulse -i default -c:a aac \
-	-crtc_id 48 -framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=2560:h=1440:format=nv12 -c:v h264_vaapi \
+	-framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=2560:h=1440:format=nv12 -c:v h264_vaapi \
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
