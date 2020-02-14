@@ -1,21 +1,6 @@
 #!/bin/bash -e
 
-if ! test -z "$WAYLAND_DISPLAY"
-then
-	exec record
-	exit
-fi
-
-while getopts "mnhv" o
-do
-	case "$o" in
-	(\?) echo "Invalid option: -$OPTARG" >&2 ;;
-	(h) less $(readlink -f $(dirname $0))/README.md; exit;;
-	(v) verbose="";; # funnily ffmpeg is verbose by default
-	(*) break;;
-	esac
-done
-shift $((OPTIND - 1))
+test "$WAYLAND_DISPLAY" && { exec record; exit; }
 
 lockfile=/tmp/r2d2
 
@@ -44,10 +29,9 @@ then
 	fi
 fi
 
-output="$HOME/recordmydesktop2.0/$(date +%Y-%m-%d)/${1:-$(date +%s)}.mp4"
+output="$HOME/recordmydesktop2.0/$(date +%F)/${1:-$(date +%s)}.mp4"
 mkdir -p $(dirname $output)
 
-# Only create RAW file if one does not exist
 test -f "$output" && exit
 
 for prg in xdpyinfo ffmpeg
@@ -55,11 +39,9 @@ do
 	which $prg || { echo "needs ${prg} installed"; exit 1; }
 done
 
-xcompmgr &
+xcompmgr & # needed by https://github.com/andykitchen/swcursor to give us a big cursor
 test -d /home/hendry/tmp/swcursor/ && cd /home/hendry/tmp/swcursor/ && ./swcursor &
 
-# https://trac.ffmpeg.org/wiki/Capture/Desktop
-# https://raw.githubusercontent.com/gilesp/video-presentation/master/capture.sh
 export FFREPORT=file=/tmp/$(basename $output).log
 echo Logging to $FFREPORT
 
@@ -67,11 +49,12 @@ size=$(xdpyinfo | grep dimensions | awk '{print $2;}')
 x=${size%x*}
 y=${size#*x}
 
-#  Capture the screen from the first active KMS plane: 
+# Capture the screen from the first active KMS plane
 # https://trac.ffmpeg.org/wiki/Hardware/VAAPI
 ffmpeg -report \
+	-v warning \
 	-f pulse -i default -c:a aac \
-	-device /dev/dri/card0 -f kmsgrab -i - \
+	-thread_queue_size 512 -device /dev/dri/card0 -f kmsgrab -i - \
 	-vf "hwmap=derive_device=vaapi,scale_vaapi=w=${x}:h=${y}:format=nv12" -c:v h264_vaapi -qp 24 \
 	$output &
 
