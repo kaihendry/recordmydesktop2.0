@@ -21,6 +21,8 @@ then
 		then
 			ofilename="$(dirname $(readlink -f ${fn}))/${filename}.mp4"
 			mv -v "$fn" "$ofilename"
+			# Rename FFREPORT log file too
+			mv -v "/tmp/$(basename $fn).log" "/tmp/$(basename $ofilename .mp4).log"
 			upload "$ofilename"
 		fi
 		exit
