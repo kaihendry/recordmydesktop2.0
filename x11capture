@@ -71,7 +71,7 @@ echo Logging to $FFREPORT
 
 ffmpeg -report \
 	-f pulse -i default -c:a aac \
-	-framerate 30 -device /dev/dri/card0 -f kmsgrab -i - -vf 'hwmap=derive_device=vaapi,scale_vaapi=w=2560:h=1440:format=nv12' -c:v h264_vaapi -qp 24 \
+	-framerate 30 -f kmsgrab -i - -vaapi_device /dev/dri/renderD128 -filter:v hwmap,scale_vaapi=w=2560:h=1440:format=nv12 -c:v h264_vaapi \
 	$output &
 
 echo "$! $(readlink -f $output)" > $lockfile
