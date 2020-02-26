@@ -33,7 +33,6 @@ fi
 
 output="$HOME/recordmydesktop2.0/$(date +%F)/${1:-$(date +%s)}.mp4"
 mkdir -p $(dirname $output)
-
 test -f "$output" && exit
 
 for prg in xdpyinfo ffmpeg
@@ -56,7 +55,7 @@ y=${size#*x}
 ffmpeg -report \
 	-v warning \
 	-f pulse -i default -c:a aac \
-	-thread_queue_size 512 -device /dev/dri/card0 -f kmsgrab -i - \
+	-device /dev/dri/card0 -f kmsgrab -thread_queue_size 512 -i - \
 	-vf "hwmap=derive_device=vaapi,scale_vaapi=w=${x}:h=${y}:format=nv12" -c:v h264_vaapi -qp 24 \
 	$output &
 
